@@ -8,6 +8,7 @@ Listcopy copies files from lines in a text document to a specified directory.
 
 import sys
 import argparse
+import pprint
 from pathlib import Path
 from textwrap import dedent
 from shutil import copy2
@@ -18,6 +19,12 @@ def get_file_list(sourceFile):
     try:
         with open(sourceFile) as file:
             fileList = file.read().splitlines()
+        for line in fileList:
+            if not Path(line).is_file():
+                fileList.remove(line)
+        for line in fileList:
+            if line == "":
+                fileList.remove(line)
     except FileNotFoundError as error:
         sys.exit(error)
     return fileList
@@ -58,7 +65,10 @@ def main(*args):
     args = parser.parse_args()
 
     if args.list:
-        print(get_file_list(args.list[0]))
+        pp = pprint.PrettyPrinter(indent=4)
+        fileList = get_file_list(args.list[0])
+        print("Found {} files:".format(len(fileList)))
+        pp.pprint(fileList)
     elif args.copy:
         lines = get_file_list(args.copy[0])
         copy_files(args.copy[1], lines)
