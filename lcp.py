@@ -16,7 +16,7 @@ from shutil import copy2
 def get_file_list(sourceFile):
     """split lines from source file into list"""
     try:
-        with open('{}'.format(sourceFile)) as file:
+        with open(sourceFile) as file:
             fileList = file.read().splitlines()
     except FileNotFoundError as error:
         sys.exit(error)
