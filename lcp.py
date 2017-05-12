@@ -15,7 +15,7 @@ from shutil import copy2
 
 
 def get_file_list(sourceFile):
-    """split lines from source file into list"""
+    """split lines from source file into list and strip non-files"""
     try:
         with open(sourceFile) as file:
             fileList = file.read().splitlines()
@@ -34,10 +34,10 @@ def copy_files(destinationPath, fileList):
     """copy listed files to destination directory"""
     dpath = Path(destinationPath)
     if dpath.is_dir():
-        dpath = str(dpath)
-        for line in fileList:
+        destination = str(dpath)
+        for fileName in fileList:
             try:
-                copy2(line, dpath)
+                copy2(fileName, destination)
             except FileNotFoundError as error:
                 print(error)
                 continue
