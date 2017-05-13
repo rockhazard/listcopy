@@ -64,7 +64,7 @@ def copy_files(fileList, destinationPath):
                 print(fileName)
             except IsADirectoryError:
                 # create new directory then recursively copy contents of source
-                newDir = destination + "/" + Path(fileName).stem
+                newDir = str(Path(destination, Path(fileName).stem))
                 copy_tree(fileName, newDir)
                 continue
             except FileNotFoundError as error:
