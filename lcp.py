@@ -75,7 +75,8 @@ def copy_files(fileList, destinationPath):
         for fileName in fileList:
             try:
                 copy2(fileName, destination)
-                print("{} >> {}".format(fileList.index(fileName) + 1, fileName))
+                print("{}\"{}\"".format(number_lines(
+                    fileList, fileList.index(fileName)), fileName))
             except IsADirectoryError:
                 # create new directory then recursively copy contents of source
                 newDir = str(Path(destination, Path(fileName).stem))
