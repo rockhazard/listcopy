@@ -28,6 +28,7 @@ import argparse
 import pprint
 from pathlib import Path
 from textwrap import dedent
+from distutils.dir_util import copy_tree
 from shutil import copy2
 
 
@@ -38,9 +39,14 @@ def get_file_list(sourceFile):
             sourceList = file.read().splitlines()
         fileList = []
         for line in sourceList:
-            if Path(line).is_file():
+            if Path(line).exists():
                 fileList.append(line)
+        for line in sourceList:
+            if not line:
+                fileList.remove(line)
     except FileNotFoundError as error:
+        sys.exit(error)
+    except IsADirectoryError as error:
         sys.exit(error)
     return fileList
 
@@ -56,6 +62,11 @@ def copy_files(fileList, destinationPath):
             try:
                 copy2(fileName, destination)
                 print(fileName)
+            except IsADirectoryError:
+                # create new directory then recursively copy contents of source
+                newDir = destination + "/" + Path(fileName).stem
+                copy_tree(fileName, newDir)
+                continue
             except FileNotFoundError as error:
                 faults.append(error)
                 print(error)
@@ -89,7 +100,9 @@ def main(*args):
         pp = pprint.PrettyPrinter(indent=4)
         fileList = get_file_list(args.list[0])
         print("Found {} valid files:".format(len(fileList)))
-        pp.pprint(fileList)
+        # pp.pprint(fileList)
+        for line in fileList:
+            print(">> \"{}\"".format(line))
     elif args.copy:
         fileList = get_file_list(args.copy[0])
         copy_files(fileList, args.copy[1])
