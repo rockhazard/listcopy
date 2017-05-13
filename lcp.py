@@ -2,10 +2,19 @@
 
 """
 ================================================================================
-Listcopy copies files from lines in a text document to a specified directory.
+PROGRAM: Listcopy
+
+FILE: lcp.py
+
+DESCRIPTION: copies files from lines in a text document to a given directory.
 Useful for collecting files scattered over multiple directories into one
 place after compiling their locations in a list, especially when the files
 have no pattern to filter against (for instance with find or other tools).
+
+USAGE: lcp.py --help
+
+TIP: Sublime Text and Atom will paste the full path of any files you copy to the
+clipboard, allowing easy construction of source files for use with this script.
 ================================================================================
 """
 
@@ -22,17 +31,11 @@ def get_file_list(sourceFile):
     """split lines from source file into list and strip non-files"""
     try:
         with open(sourceFile) as file:
-            fileList = file.read().splitlines()
-        # seems to break with only file exist check
-        for line in fileList:
-            if not Path(line).is_file():
-                fileList.remove(line)
-        for line in fileList:
-            if line == "":
-                fileList.remove(line)
-        for line in fileList:
-            if line.startswith(("#", "//")):
-                fileList.remove(line)
+            sourceList = file.read().splitlines()
+        fileList = []
+        for line in sourceList:
+            if Path(line).is_file():
+                fileList.append(line)
     except FileNotFoundError as error:
         sys.exit(error)
     return fileList
@@ -76,11 +79,11 @@ def main(*args):
     if args.list:
         pp = pprint.PrettyPrinter(indent=4)
         fileList = get_file_list(args.list[0])
-        print("Found {} files:".format(len(fileList)))
+        print("Found {} valid files:".format(len(fileList)))
         pp.pprint(fileList)
     elif args.copy:
         lines = get_file_list(args.copy[0])
         copy_files(lines, args.copy[1])
 
-if __name__ == "__main__":  # if not imported as module, execute script
+if __name__ == "__main__":
     sys.exit(main(sys.argv[1:]))
