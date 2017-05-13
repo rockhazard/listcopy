@@ -25,11 +25,25 @@ clipboard, allowing easy construction of source files for use with this script.
 
 import sys
 import argparse
-import pprint
 from pathlib import Path
 from textwrap import dedent
-from distutils.dir_util import copy_tree
 from shutil import copy2
+# copytree won't write to an existing directory, but copy_tree will
+from distutils.dir_util import copy_tree
+
+
+def number_lines(fileList, index):
+    """Ensures all line numbers have leading zeros matching the size of largest
+    line number."""
+    max = str(len(fileList))
+    natNum = str(index + 1)
+    zeros = len(max) - len(natNum)
+    if zeros:
+        number = "0" * zeros
+        lineNumber = number + natNum + " >> "
+    else:
+        lineNumber = natNum + " >> "
+    return lineNumber
 
 
 def get_file_list(sourceFile):
@@ -57,21 +71,23 @@ def copy_files(fileList, destinationPath):
     if dpath.is_dir():
         faults = []
         destination = str(dpath)
-        print("copying...")
+        print("copying files to {} ...".format(destination))
         for fileName in fileList:
             try:
                 copy2(fileName, destination)
-                print(fileName)
+                print("{} >> {}".format(fileList.index(fileName) + 1, fileName))
             except IsADirectoryError:
                 # create new directory then recursively copy contents of source
                 newDir = str(Path(destination, Path(fileName).stem))
                 copy_tree(fileName, newDir)
+                print("{}\"{}\"".format(number_lines(
+                    fileList, fileList.index(fileName)), fileName))
                 continue
             except FileNotFoundError as error:
                 faults.append(error)
-                print(error)
+                print("{}\"{}\"".format(number_lines(
+                    fileList, fileList.index(fileName)), error))
                 continue
-        print("to: {}".format(destination))
         print("Operation completed with {} errors.".format(len(faults)))
     else:
         sys.exit("Invalid destination.")
@@ -97,12 +113,11 @@ def main(*args):
     args = parser.parse_args()
 
     if args.list:
-        pp = pprint.PrettyPrinter(indent=4)
         fileList = get_file_list(args.list[0])
         print("Found {} valid files:".format(len(fileList)))
-        # pp.pprint(fileList)
         for line in fileList:
-            print(">> \"{}\"".format(line))
+            print("{}\"{}\"".format(number_lines(
+                fileList, fileList.index(line)), line))
     elif args.copy:
         fileList = get_file_list(args.copy[0])
         copy_files(fileList, args.copy[1])
