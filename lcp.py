@@ -1,14 +1,19 @@
 #!/usr/bin/env python3
+
 """
-===============================================================================
+================================================================================
 Listcopy copies files from lines in a text document to a specified directory.
-===============================================================================
+Useful for collecting files scattered over multiple directories into one
+place after compiling their locations in a list, especially when the files
+have no pattern to filter against (for instance with find or other tools).
+================================================================================
 """
 
 
 import sys
 import argparse
 import pprint
+import os
 from pathlib import Path
 from textwrap import dedent
 from shutil import copy2
@@ -19,18 +24,22 @@ def get_file_list(sourceFile):
     try:
         with open(sourceFile) as file:
             fileList = file.read().splitlines()
+        # seems to break with only file exist check
         for line in fileList:
             if not Path(line).is_file():
                 fileList.remove(line)
         for line in fileList:
             if line == "":
                 fileList.remove(line)
+        for line in fileList:
+            if line.startswith(("#", "//")):
+                fileList.remove(line)
     except FileNotFoundError as error:
         sys.exit(error)
     return fileList
 
 
-def copy_files(destinationPath, fileList):
+def copy_files(fileList, destinationPath):
     """copy listed files to destination directory"""
     dpath = Path(destinationPath)
     if dpath.is_dir():
@@ -38,6 +47,7 @@ def copy_files(destinationPath, fileList):
         for fileName in fileList:
             try:
                 copy2(fileName, destination)
+                print("copied: {}".format(fileName))
             except FileNotFoundError as error:
                 print(error)
                 continue
@@ -71,7 +81,7 @@ def main(*args):
         pp.pprint(fileList)
     elif args.copy:
         lines = get_file_list(args.copy[0])
-        copy_files(args.copy[1], lines)
+        copy_files(lines, args.copy[1])
 
 if __name__ == "__main__":  # if not imported as module, execute script
     sys.exit(main(sys.argv[1:]))
