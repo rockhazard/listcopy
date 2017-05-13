@@ -13,7 +13,6 @@ have no pattern to filter against (for instance with find or other tools).
 import sys
 import argparse
 import pprint
-import os
 from pathlib import Path
 from textwrap import dedent
 from shutil import copy2
