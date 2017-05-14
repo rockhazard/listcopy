@@ -35,12 +35,12 @@ from distutils.dir_util import copy_tree
 def number_lines(fileList, index):
     """Ensures all line numbers have leading zeros matching the size of largest
     line number."""
-    max = str(len(fileList))
+    maxZeros = str(len(fileList))
     natNum = str(index + 1)
-    zeros = len(max) - len(natNum)
-    if zeros:
-        number = "0" * zeros
-        lineNumber = number + natNum + " >> "
+    nZeros = len(maxZeros) - len(natNum)
+    if nZeros:
+        neros = "0" * nZeros
+        lineNumber = neros + natNum + " >> "
     else:
         lineNumber = natNum + " >> "
     return lineNumber
@@ -100,7 +100,7 @@ def main(*args):
     """
     parser = argparse.ArgumentParser(
         prog=sys.argv[0][2:], description=dedent("""\
-            %(prog)s copies any valid files listed in the source file on separate 
+            %(prog)s copies any valid files listed in the source file on separate
             lines into the given destination directory."""),
         epilog="""Author: rockhazard License: MIT""")
     parser.add_argument('--version', help='print version info then exit',
