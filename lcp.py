@@ -39,8 +39,8 @@ def number_lines(fileList, index):
     natNum = str(index + 1)
     nZeros = len(maxZeros) - len(natNum)
     if nZeros:
-        neros = "0" * nZeros
-        lineNumber = neros + natNum + " >> "
+        zeros = "0" * nZeros
+        lineNumber = zeros + natNum + " >> "
     else:
         lineNumber = natNum + " >> "
     return lineNumber
