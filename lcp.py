@@ -17,8 +17,9 @@ USAGE: lcp.py --help
 
 CONTRIBUTORS: rockhazardz@gmail.com
 
-TIP: Sublime Text and Atom will paste the full path of any files you copy to the
-clipboard, allowing easy construction of source files for use with this script.
+TIP: Sublime Text and Atom will paste the full path of any files you copy to
+the clipboard, allowing easy construction of source files for use with this
+script.
 ================================================================================
 """
 
@@ -122,6 +123,7 @@ def main(*args):
     elif args.copy:
         fileList = get_file_list(args.copy[0])
         copy_files(fileList, args.copy[1])
+
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv[1:]))
