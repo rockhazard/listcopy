@@ -10,7 +10,7 @@ clipboard, allowing easy construction of source files for use with this script.
 
 ## Requirments
 
-Python 3
+Python 3.5+
 
 ## Usage
 
