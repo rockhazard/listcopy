@@ -47,7 +47,7 @@ def number_lines(fileList, index):
     return lineNumber
 
 
-def get_file_list(sourceFile):
+def get_file_list(sourceFile=None):
     """split lines from source file into list and strip non-files"""
     try:
         with open(sourceFile) as file:
@@ -66,7 +66,7 @@ def get_file_list(sourceFile):
     return fileList
 
 
-def copy_files(fileList, destinationPath):
+def copy_files(fileList, destinationPath, fcplib=copy2, tcplib=copy_tree):
     """copy listed files to destination directory"""
     dpath = Path(destinationPath)
     if dpath.is_dir():
@@ -75,13 +75,13 @@ def copy_files(fileList, destinationPath):
         print("copying files to {} ...".format(destination))
         for fileName in fileList:
             try:
-                copy2(fileName, destination)
+                fcplib(fileName, destination)
                 print("{}\"{}\"".format(number_lines(
                     fileList, fileList.index(fileName)), fileName))
             except IsADirectoryError:
                 # create new directory then recursively copy contents of source
                 newDir = str(Path(destination, Path(fileName).stem))
-                copy_tree(fileName, newDir)
+                tcplib(fileName, newDir)
                 print("{}\"{}\"".format(number_lines(
                     fileList, fileList.index(fileName)), fileName))
                 continue
@@ -90,6 +90,7 @@ def copy_files(fileList, destinationPath):
                 print("{}\"{}\"".format(number_lines(
                     fileList, fileList.index(fileName)), error))
                 continue
+            
         print("Operation completed with {} errors.".format(len(faults)))
     else:
         sys.exit("Invalid destination.")
